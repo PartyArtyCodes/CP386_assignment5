@@ -4,7 +4,6 @@ Authors: Jayden Hunt, Arthur Severinets
 Date: 2026-07-20
 ----------------------*/
 
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -21,7 +20,6 @@ int *available  = NULL;
 int **maximum   = NULL;  
 int **allocation = NULL; 
 int **need      = NULL;   
-
 
 pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
 pthread_cond_t  cond  = PTHREAD_COND_INITIALIZER;
@@ -198,12 +196,10 @@ static void *customer_thread(void *arg)
     printf("\n");
 
     printf("    Thread has started\n");
-
-
     printf("    Thread has finished\n");
     printf("    Thread is releasing resources\n");
 
-    /* Release everything the customer holds */
+    
     for (int j = 0; j < m; j++) {
         available[j] += allocation[id][j];
         allocation[id][j] = 0;
@@ -269,7 +265,6 @@ static void load_maximum_from_file(void)
     char line[MAX_LINE];
     n = 0;
     while (fgets(line, sizeof(line), fp)) {
-        /* Skip lines that contain no digits */
         bool has_digit = false;
         for (char *p = line; *p; p++) {
             if (*p >= '0' && *p <= '9') {
@@ -284,7 +279,6 @@ static void load_maximum_from_file(void)
     maximum    = alloc_matrix(n, m);
     allocation = alloc_matrix(n, m);
     need       = alloc_matrix(n, m);
-
 
     rewind(fp);
     int row = 0;
@@ -303,7 +297,7 @@ static void load_maximum_from_file(void)
         char *tok = strtok(line, " ,\t\r\n");
         while (tok && col < m) {
             maximum[row][col] = atoi(tok);
-            need[row][col]    = maximum[row][col]; /* need = max - alloc(0) */
+            need[row][col]    = maximum[row][col]; 
             col++;
             tok = strtok(NULL, " ,\t\r\n");
         }
@@ -321,7 +315,6 @@ int main(int argc, char *argv[])
         return EXIT_FAILURE;
     }
 
-    
     m = argc - 1;
     available = malloc(m * sizeof(int));
     for (int j = 0; j < m; j++)
@@ -344,14 +337,13 @@ int main(int argc, char *argv[])
         printf("Enter Command: ");
         fflush(stdout);
         if (!fgets(line, sizeof(line), stdin))
-            break; /* EOF */
+            break; 
 
-        /* Strip trailing newline */
         line[strcspn(line, "\r\n")] = '\0';
 
         char *cmd = strtok(line, " \t");
         if (!cmd)
-            continue; /* empty line */
+            continue;
 
         if (strcmp(cmd, "Exit") == 0) {
             break;
@@ -396,7 +388,6 @@ int main(int argc, char *argv[])
         }
     }
 
-    /* Cleanup */
     free(values);
     free(available);
     free_matrix(maximum, n);
